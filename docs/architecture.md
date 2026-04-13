@@ -1,10 +1,10 @@
-# 아키텍처
+# Architecture
 
-## 기술 스택
-<!-- 결정된 기술과 선택 이유 -->
+## Tech Stack
+<!-- Decided technologies and reasons for choosing them -->
 
-## 디렉토리 구조
-<!-- 소스 코드 구조 설명 -->
+## Directory Structure
+<!-- Source code structure description -->
 
-## 주요 결정사항
-<!-- 기술적 결정과 그 이유 기록 -->
+## Key Decisions
+<!-- Record of technical decisions and their rationale -->

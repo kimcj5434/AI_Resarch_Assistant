@@ -1,16 +1,16 @@
-# 현재 실행 계획
+# Current Sprint Plan
 
-## 목표
-<!-- 지금 이 스프린트에서 달성하려는 것 -->
+## Goal
+<!-- What we aim to achieve in this sprint -->
 
-## 완료 조건
+## Done Criteria
 - [ ] 
 
-## 작업 순서
+## Task Order
 1. 
 
-## 금지사항
-<!-- 이 단계에서 하지 않을 것들 -->
+## Out of Scope
+<!-- Things we will NOT do in this stage -->
 -
 
-## 메모
+## Notes
