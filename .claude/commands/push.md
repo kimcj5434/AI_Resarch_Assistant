@@ -33,13 +33,7 @@ Git push workflow with optional Jira comments for all unpushed commits that refe
 
    c. Run `git show <hash> --stat` to get changed files and diff summary for that commit.
 
-   d. Use `mcp__jira__getTeamworkGraphContext` with:
-      - `cloudId`: `"kimcj5434.atlassian.net"`
-      - `objectType`: `"JiraWorkItem"`
-      - `objectIdentifier`: the extracted ticket key (e.g. `"CL-42"`)
-      - `detailLevel`: `"summary"`
-
-   e. Use `mcp__jira__getTeamworkGraphObject` with `cloudId`: `"kimcj5434.atlassian.net"` to fetch the ticket's current title and description for context.
+   d. Use `mcp__jira__getJiraIssue` with the extracted ticket key (e.g. `"CL-42"`) to fetch the ticket's current title and description for context.
 
    f. Compose a Korean comment summarizing the commit. The comment must include:
       - 어떤 브랜치에서 푸시되었는지
