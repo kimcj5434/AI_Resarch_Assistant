@@ -14,5 +14,5 @@
 ## Key Design
 
 - pgvector stores sentence embeddings directly in the articles table — no separate vector store needed
-- Alembic migrations live in `good_news_collector` service (authoritative schema owner)
+- Alembic migrations live in `good_news_board` service (authoritative schema owner)
 - All services connect to a single PostgreSQL instance via shared environment variables

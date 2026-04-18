@@ -12,29 +12,6 @@
 
 ---
 
-## Workflow
-
-```
-[Crawler Engine]──┐
-                  ▼
-[LLM Engine]──► [News Scorer]   ← Celery worker (데이터 생산)
-                  │
-                  ▼
-              [PostgreSQL]
-                  ▲
-[LLM Engine]──► [Global Event Tracker]  ← Celery worker (데이터 생산)
-
-              [PostgreSQL]
-                  │
-                  ▼
-            [API / FastAPI]             ← 데이터 노출, 인증
-                  │
-                  ▼
-             [Frontend]                 ← UI 제공
-```
-
----
-
 ## Engine Usage by Service
 
 | Service | Engines Used |
@@ -64,7 +41,7 @@ AI_Research_Assistant/
 ├── api/
 │   └── docs/
 ├── frontend/
-│   ├── good_news_collector/
+│   ├── good_news_board/
 │   │   └── docs/
 │   └── global_event_tracker/
 │       └── docs/

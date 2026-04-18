@@ -6,7 +6,7 @@ An investment news research assistant that continuously monitors financial marke
 
 ## Services
 
-### Good News Collector
+### Good News Board
 - Crawls Korean and global financial news sources (RSS + web)
 - Scores investment importance (high / medium / low) using Claude API
 - Extracts copyright-safe fact summaries — no full article body stored

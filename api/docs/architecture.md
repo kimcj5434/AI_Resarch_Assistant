@@ -1,7 +1,7 @@
 # API — Architecture
 
 ## Responsibility
-- Expose data produced by Good News Collector and Global Event Tracker
+- Expose data produced by News scorer and Global Event Tracker
 - Handle authentication and request validation
 - Act as the single backend ingress for the Frontend
 
