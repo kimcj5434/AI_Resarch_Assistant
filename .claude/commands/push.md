@@ -41,16 +41,37 @@ git log -1 --format="%s%n%n%b" <HASH>
       <KOREAN_TRANSLATION>
       ```
 
-   d. Post the comment to Jira:
+   d. Post the comment to Jira using a Python heredoc to build valid ADF JSON.
+      Split the comment on newlines — each line becomes its own `paragraph` node; empty lines become empty paragraphs.
+      This is required because Jira's ADF renderer does not treat `\n` inside a single paragraph as a line break.
 
       ```bash
-      curl -s -X POST \
-        -H "Authorization: Basic $(echo -n "${JIRA_EMAIL}:${JIRA_API_TOKEN}" | base64 -w 0)" \
-        -H "Content-Type: application/json" \
-        -d "{\"body\": {\"type\": \"doc\", \"version\": 1, \"content\": [{\"type\": \"paragraph\", \"content\": [{\"type\": \"text\", \"text\": \"<JSON_ESCAPED_COMMENT>\"}]}]}}" \
-        "${JIRA_BASE_URL}/rest/api/3/issue/<TICKET>/comment"
+      python3 << 'PYEOF'
+import json, os, urllib.request, base64
+
+comment = """<COMMENT_BODY>"""
+
+lines = comment.split('\n')
+content = []
+for line in lines:
+    if line == '':
+        content.append({"type": "paragraph", "content": []})
+    else:
+        content.append({"type": "paragraph", "content": [{"type": "text", "text": line}]})
+
+payload = json.dumps({"body": {"type": "doc", "version": 1, "content": content}}).encode()
+token = base64.b64encode(f"{os.environ['JIRA_EMAIL']}:{os.environ['JIRA_API_TOKEN']}".encode()).decode()
+req = urllib.request.Request(
+    f"{os.environ['JIRA_BASE_URL']}/rest/api/3/issue/<TICKET>/comment",
+    data=payload,
+    headers={"Authorization": f"Basic {token}", "Content-Type": "application/json"},
+    method="POST"
+)
+with urllib.request.urlopen(req) as r:
+    print(r.status, r.read().decode()[:200])
+PYEOF
       ```
 
-      `<JSON_ESCAPED_COMMENT>` is the comment body with `\`, `"`, and newlines JSON-escaped.
+      Replace `<COMMENT_BODY>` with the actual multiline comment text and `<TICKET>` with the ticket key.
 
 5. Report results: list each ticket commented on, and note any failures.
