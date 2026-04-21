@@ -1,7 +1,7 @@
 # Good News Board Frontend — Architecture
 
 ## Responsibility
-- Display scored articles from the News Scorer service
+- Display scored articles from the News Scorer backend
 - Provide filtering, sorting, and search for investment research
 - Allow manual article management (create, edit, delete)
 

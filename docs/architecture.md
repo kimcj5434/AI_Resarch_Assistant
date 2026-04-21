@@ -6,15 +6,15 @@
 |---|---|
 | Infrastructure | PostgreSQL 16 + pgvector, Redis, Docker Compose, Alembic |
 | Engine | Crawler Engine, LLM Engine |
-| Service | News Scorer, Global Event Tracker |
+| Backend | News Scorer, Global Event Tracker |
 | API | FastAPI |
 | Client | Frontend (Next.js) |
 
 ---
 
-## Engine Usage by Service
+## Engine Usage by Backend
 
-| Service | Engines Used |
+| Backend | Engines Used |
 |---|---|
 | News Scorer | Crawler Engine, LLM Engine |
 | Global Event Tracker | LLM Engine, sentence-transformers (embedding) |
@@ -33,7 +33,7 @@ AI_Research_Assistant/
 │   │   └── docs/
 │   └── llm/
 │       └── docs/
-├── services/
+├── backend/
 │   ├── news_scorer/
 │   │   └── docs/
 │   └── global_event_tracker/

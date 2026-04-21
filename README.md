@@ -4,7 +4,7 @@ An investment news research assistant that continuously monitors financial marke
 
 ---
 
-## Services
+## Backend
 
 ### Good News Board
 - Crawls Korean and global financial news sources (RSS + web)

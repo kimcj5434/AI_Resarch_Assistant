@@ -1,7 +1,7 @@
 # Global Event Tracker Frontend — Architecture
 
 ## Responsibility
-- Visualize the event knowledge graph produced by the Global Event Tracker service
+- Visualize the event knowledge graph produced by the Global Event Tracker backend
 - Provide admin mode for inline graph editing
 
 ## Tech Stack
