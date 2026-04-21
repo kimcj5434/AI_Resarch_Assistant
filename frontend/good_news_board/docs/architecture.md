@@ -9,22 +9,35 @@
 
 | Component | Technology |
 |---|---|
-| Framework | Next.js (App Router) + TypeScript |
-| Styling | Tailwind CSS + shadcn/ui |
+| Framework | Next.js 15 (App Router) + TypeScript |
+| Styling | Tailwind CSS v3 + shadcn/ui (Radix UI primitives) |
+| Icons | lucide-react |
+| Date handling | date-fns v4 |
 | Backend proxy | Next.js `/api/[...proxy]` → FastAPI |
 
 ## Pages & Components
 
-- `/` — article card list with search, date filter, and sort controls
-- `ArticleCard` — displays headline, source, collected time, published date, reason; card menu for edit/delete
+- `/` — SSR article list page with search, date filter, sort controls, and pagination
+- `ArticleList` — CSR wrapper managing filter/sort/pagination state and CRUD operations
+- `ArticleCard` — displays headline (link), source badge, reason, collected time, published date; card menu for edit/delete
 - `ArticleFormModal` — shared modal for create and edit
 - `DeleteConfirmDialog` — confirmation dialog before deletion
+- `components/ui/` — shadcn/ui base components (Button, Badge, Dialog, DropdownMenu, Input, Label, Textarea)
 
 ## Directory Structure
 
 ```
 frontend/good_news_board/
+├── package.json
+├── package-lock.json
+├── tsconfig.json
+├── next.config.ts
+├── tailwind.config.ts
+├── postcss.config.mjs
+├── .eslintrc.json
+├── next-env.d.ts
 ├── app/
+│   ├── globals.css
 │   ├── layout.tsx
 │   ├── page.tsx               # SSR — article list
 │   └── api/
@@ -33,9 +46,25 @@ frontend/good_news_board/
 ├── components/
 │   ├── ArticleCard.tsx
 │   ├── ArticleFormModal.tsx
-│   └── DeleteConfirmDialog.tsx
-└── lib/
-    └── api.ts                 # fetch helpers
+│   ├── ArticleList.tsx
+│   ├── DeleteConfirmDialog.tsx
+│   └── ui/
+│       ├── badge.tsx
+│       ├── button.tsx
+│       ├── dialog.tsx
+│       ├── dropdown-menu.tsx
+│       ├── input.tsx
+│       ├── label.tsx
+│       └── textarea.tsx
+├── lib/
+│   ├── api.ts                 # fetch helpers (CRUD)
+│   └── utils.ts               # cn(), getSourceColor()
+├── types/
+│   └── index.ts               # Article, ArticleFormData, SortOrder
+└── docs/
+    ├── architecture.md
+    ├── requirements.md
+    └── history/
 ```
 
 ## Rendering Strategy
@@ -43,15 +72,16 @@ frontend/good_news_board/
 | Page / Component | Strategy | Reason |
 |---|---|---|
 | Article list (`/`) | SSR | Initial load with full data |
-| Search / date filter | CSR | Real-time filtering without full page reload |
-| ArticleFormModal | CSR | User interaction only |
+| `ArticleList` | CSR | Real-time filtering, sorting, pagination without full reload |
+| `ArticleFormModal` | CSR | User interaction only |
+| `DeleteConfirmDialog` | CSR | User interaction only |
 
 ## Data Flow
 
 ```
 Browser
-  └── Server Component (SSR)  →  /api/[...proxy]  →  FastAPI
-  └── Client Component (CSR)  →  /api/[...proxy]  →  FastAPI
+  └── Server Component (SSR, page.tsx)  →  /api/[...proxy]  →  FastAPI
+  └── Client Component (ArticleList)    →  /api/[...proxy]  →  FastAPI
 ```
 
 ## API Interactions
@@ -63,7 +93,15 @@ Browser
 | Update article | PATCH | `/api/articles/{id}` |
 | Delete article | DELETE | `/api/articles/{id}` |
 
+## Environment Variables
+
+| Variable | Default | Description |
+|---|---|---|
+| `FASTAPI_URL` | `http://localhost:8000` | FastAPI base URL for proxy |
+
 ## Key Design
 
 - All API calls go through Next.js proxy; FastAPI URL never exposed to browser
-- No client-side state library — Server Components fetch data directly, Client Components use local state
+- No client-side state library — Server Components fetch data directly, Client Components use local `useState`
+- Source badge color is deterministically assigned by hashing the source name (8 color palette)
+- Pagination: 10 articles per page, client-side

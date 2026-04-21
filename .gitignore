@@ -1,2 +1,18 @@
 .mcp.json
 .claude/settings.local.json
+*node_modules*
+
+# Next.js
+**/.next/
+**/out/
+
+# Environment
+**/.env
+**/.env.local
+**/.env*.local
+
+# TypeScript cache
+**/tsconfig.tsbuildinfo
+
+# Mock DB (local persistence file)
+**/mock_db.json

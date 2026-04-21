@@ -1,9 +1,11 @@
 {
-  "hooks": {},
   "permissions": {
     "allow": [
       "Bash(docker *)",
-      "Bash(git *)"
+      "Bash(git *)",
+      "Bash(npm *)",
+      "Bash(*)"
     ]
-  }
+  },
+  "hooks": {}
 }
