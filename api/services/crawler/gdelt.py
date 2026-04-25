@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 GDELT_API = "https://api.gdeltproject.org/api/v2/doc/doc"
 QUERY = (
     "economy investment finance market earnings positive "
-    "sourcelang:kor OR sourcelang:eng"
+    "sourcelang:Korean OR sourcelang:English"
 )
 
 

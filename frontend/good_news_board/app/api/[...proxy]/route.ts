@@ -86,6 +86,9 @@ async function handler(request: NextRequest, { params }: Params) {
 
   if (urlPath === "articles" && request.method === "POST") {
     const body = (jsonBody ?? {}) as Partial<MockArticle>;
+    if (body.url && db.articles.some((a) => a.url === body.url)) {
+      return NextResponse.json({ detail: "Article with this URL already exists" }, { status: 409 });
+    }
     const article: MockArticle = {
       id: db.nextId++,
       headline: body.headline ?? "",
@@ -115,6 +118,8 @@ async function handler(request: NextRequest, { params }: Params) {
   }
 
   if (id !== null && request.method === "DELETE") {
+    const exists = db.articles.some((a) => a.id === id);
+    if (!exists) return NextResponse.json({ detail: "not found" }, { status: 404 });
     db.articles = db.articles.filter((a) => a.id !== id);
     writeDb(db);
     return new NextResponse(null, { status: 204 });
