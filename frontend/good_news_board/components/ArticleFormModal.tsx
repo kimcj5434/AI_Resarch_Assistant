@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -82,6 +83,9 @@ export default function ArticleFormModal({
       <DialogContent className="sm:max-w-[520px]">
         <DialogHeader>
           <DialogTitle>{isEditMode ? "기사 수정" : "기사 추가"}</DialogTitle>
+          <DialogDescription className="sr-only">
+            {isEditMode ? "기사 정보를 수정합니다." : "새 기사를 추가합니다."}
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">

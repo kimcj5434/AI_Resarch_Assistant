@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -39,6 +40,9 @@ export default function DeleteConfirmDialog({
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
           <DialogTitle>기사 삭제</DialogTitle>
+          <DialogDescription className="sr-only">
+            선택한 기사를 삭제합니다. 이 작업은 되돌릴 수 없습니다.
+          </DialogDescription>
         </DialogHeader>
         <p className="text-sm text-gray-600 mt-1">
           <span className="font-medium text-gray-900">
