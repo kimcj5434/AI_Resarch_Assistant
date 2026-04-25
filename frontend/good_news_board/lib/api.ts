@@ -47,3 +47,8 @@ export async function deleteArticle(id: number): Promise<void> {
   const res = await fetch(`${BASE}/${id}`, { method: "DELETE" });
   if (!res.ok) await throwWithDetail(res, "Failed to delete article");
 }
+
+export async function triggerCrawl(): Promise<void> {
+  const res = await fetch("/api/crawl/run", { method: "POST" });
+  if (!res.ok) await throwWithDetail(res, "Failed to trigger crawl");
+}

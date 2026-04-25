@@ -5,7 +5,19 @@ import path from "path";
 const FASTAPI_URL = process.env.FASTAPI_URL ?? "http://localhost:8000";
 const DB_PATH = path.join(process.cwd(), "mock_db.json");
 
-type MockDb = { articles: Record<string, unknown>[]; nextId: number };
+type MockArticle = {
+  id: number;
+  headline: string;
+  source: string;
+  url: string;
+  published_at: string;
+  collected_at: string;
+  score: number;
+  reason: string | null;
+  is_shown: boolean;
+  is_manual: boolean;
+};
+type MockDb = { articles: MockArticle[]; nextId: number };
 
 function readDb(): MockDb {
   try {
@@ -23,9 +35,8 @@ type Params = { params: Promise<{ proxy: string[] }> };
 
 async function handler(request: NextRequest, { params }: Params) {
   const { proxy } = await params;
-  const path = proxy.join("/");
+  const urlPath = proxy.join("/");
 
-  // Read body once upfront so it can be reused in both proxy and mock
   let rawBody: ArrayBuffer | undefined;
   let jsonBody: Record<string, unknown> | undefined;
   if (request.method !== "GET" && request.method !== "HEAD") {
@@ -40,7 +51,7 @@ async function handler(request: NextRequest, { params }: Params) {
   // Try forwarding to FastAPI
   try {
     const url = new URL(request.url);
-    const target = `${FASTAPI_URL}/${path}${url.search}`;
+    const target = `${FASTAPI_URL}/${urlPath}${url.search}`;
     const headers = new Headers(request.headers);
     headers.delete("host");
 
@@ -56,19 +67,36 @@ async function handler(request: NextRequest, { params }: Params) {
   }
 
   // Mock implementation
-  const idMatch = path.match(/^articles\/(\d+)$/);
+  const idMatch = urlPath.match(/^articles\/(\d+)$/);
   const id = idMatch ? Number(idMatch[1]) : null;
+  const searchParams = new URL(request.url).searchParams;
   const db = readDb();
 
-  if (path === "articles" && request.method === "GET") {
-    return NextResponse.json(db.articles);
+  if (urlPath === "articles" && request.method === "GET") {
+    const isShownParam = searchParams.get("is_shown");
+    let articles = db.articles;
+    // Default: only show is_shown=true articles (matches FastAPI behavior)
+    if (isShownParam === null || isShownParam === "true") {
+      articles = articles.filter((a) => a.is_shown !== false);
+    } else if (isShownParam === "false") {
+      articles = articles.filter((a) => a.is_shown === false);
+    }
+    return NextResponse.json(articles);
   }
 
-  if (path === "articles" && request.method === "POST") {
-    const article = {
+  if (urlPath === "articles" && request.method === "POST") {
+    const body = (jsonBody ?? {}) as Partial<MockArticle>;
+    const article: MockArticle = {
       id: db.nextId++,
+      headline: body.headline ?? "",
+      source: body.source ?? "",
+      url: body.url ?? "",
+      published_at: body.published_at ?? new Date().toISOString(),
       collected_at: new Date().toISOString(),
-      ...jsonBody,
+      score: 1,
+      is_shown: body.is_shown ?? true,
+      is_manual: true,
+      reason: body.reason ?? null,
     };
     db.articles = [article, ...db.articles];
     writeDb(db);
@@ -77,7 +105,7 @@ async function handler(request: NextRequest, { params }: Params) {
 
   if (id !== null && request.method === "PATCH") {
     db.articles = db.articles.map((a) =>
-      a.id === id ? { ...a, ...jsonBody } : a
+      a.id === id ? { ...a, ...(jsonBody as Partial<MockArticle>) } : a
     );
     const updated = db.articles.find((a) => a.id === id);
     writeDb(db);
@@ -90,6 +118,11 @@ async function handler(request: NextRequest, { params }: Params) {
     db.articles = db.articles.filter((a) => a.id !== id);
     writeDb(db);
     return new NextResponse(null, { status: 204 });
+  }
+
+  // Mock crawl trigger — always return 202
+  if (urlPath === "crawl/run" && request.method === "POST") {
+    return NextResponse.json({ status: "crawl started (mock)" }, { status: 202 });
   }
 
   return NextResponse.json({ detail: "not found" }, { status: 404 });

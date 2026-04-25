@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Search, Plus, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Plus, ArrowUpDown, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ArticleCard from "@/components/ArticleCard";
 import ArticleFormModal from "@/components/ArticleFormModal";
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
-import { createArticle, updateArticle, deleteArticle } from "@/lib/api";
+import { createArticle, updateArticle, deleteArticle, triggerCrawl, fetchArticles } from "@/lib/api";
 import type { Article, ArticleFormData, SortOrder } from "@/types";
 
 const PAGE_SIZE = 10;
@@ -27,6 +27,7 @@ export default function ArticleList({ initialArticles }: ArticleListProps) {
   const [formOpen, setFormOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Article | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Article | null>(null);
+  const [crawling, setCrawling] = useState(false);
 
   const filtered = useMemo(() => {
     let result = articles.filter((a) => {
@@ -35,7 +36,7 @@ export default function ArticleList({ initialArticles }: ArticleListProps) {
         a.headline.toLowerCase().includes(search.toLowerCase()) ||
         a.source.toLowerCase().includes(search.toLowerCase());
 
-      const pubDate = a.published_date.slice(0, 10);
+      const pubDate = a.published_at.slice(0, 10);
       const matchFrom = !dateFrom || pubDate >= dateFrom;
       const matchTo = !dateTo || pubDate <= dateTo;
 
@@ -44,8 +45,8 @@ export default function ArticleList({ initialArticles }: ArticleListProps) {
 
     result = [...result].sort((a, b) => {
       const diff =
-        new Date(b.published_date).getTime() -
-        new Date(a.published_date).getTime();
+        new Date(b.published_at).getTime() -
+        new Date(a.published_at).getTime();
       return sortOrder === "newest" ? diff : -diff;
     });
 
@@ -76,6 +77,27 @@ export default function ArticleList({ initialArticles }: ArticleListProps) {
     setArticles((prev) => prev.filter((a) => a.id !== id));
   };
 
+  const handleCrawl = async () => {
+    setCrawling(true);
+    try {
+      await triggerCrawl();
+      // Wait for crawl to process, then reload articles
+      setTimeout(async () => {
+        try {
+          const updated = await fetchArticles();
+          setArticles(updated);
+          resetPage();
+        } catch {
+          // ignore refresh error
+        } finally {
+          setCrawling(false);
+        }
+      }, 5000);
+    } catch {
+      setCrawling(false);
+    }
+  };
+
   const openEdit = (article: Article) => {
     setEditTarget(article);
     setFormOpen(true);
@@ -100,7 +122,7 @@ export default function ArticleList({ initialArticles }: ArticleListProps) {
           />
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Input
             type="date"
             value={dateFrom}
@@ -124,6 +146,15 @@ export default function ArticleList({ initialArticles }: ArticleListProps) {
             title={sortOrder === "newest" ? "최신순" : "오래된순"}
           >
             <ArrowUpDown className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleCrawl}
+            disabled={crawling}
+            title="GDELT에서 최신 기사 크롤링"
+          >
+            <RefreshCw className={`h-4 w-4 mr-1.5 ${crawling ? "animate-spin" : ""}`} />
+            {crawling ? "크롤링 중..." : "지금 크롤링"}
           </Button>
           <Button onClick={() => { setEditTarget(null); setFormOpen(true); }}>
             <Plus className="h-4 w-4 mr-1" />

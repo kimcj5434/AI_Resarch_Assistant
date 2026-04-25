@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink, MoreVertical, Pencil, Trash2, Newspaper } from "lucide-react";
+import { ExternalLink, MoreVertical, Pencil, Trash2, Newspaper, EyeOff } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { getSourceColor } from "@/lib/utils";
 import {
@@ -43,15 +43,28 @@ export default function ArticleCard({ article, onEdit, onDelete }: ArticleCardPr
             >
               {article.source}
             </span>
+            {!article.is_shown && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium border border-gray-200 text-gray-400">
+                <EyeOff className="h-3 w-3" />
+                숨김
+              </span>
+            )}
+            {article.is_manual && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border border-blue-100 text-blue-500">
+                수동
+              </span>
+            )}
           </div>
 
-          <p className="mt-1.5 text-sm text-gray-500 line-clamp-2 leading-relaxed">
-            {article.reason}
-          </p>
+          {article.reason && (
+            <p className="mt-1.5 text-sm text-gray-500 line-clamp-2 leading-relaxed">
+              {article.reason}
+            </p>
+          )}
 
           <div className="mt-3 flex items-center justify-between">
             <div className="flex items-center gap-1.5 text-xs text-gray-400">
-              <span>{format(new Date(article.published_date), "MMM d, yyyy")}</span>
+              <span>{format(new Date(article.published_at), "MMM d, yyyy")}</span>
               <span>·</span>
               <span>
                 수집:{" "}

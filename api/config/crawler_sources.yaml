@@ -1,0 +1,19 @@
+crawler:
+  crawl_interval_hours: 24
+
+sources:
+  - name: "GDELT"
+    type: "gdelt"
+    enabled: true
+    rate_limit_seconds: 2
+    robots_txt_checked: true
+    max_records: 50
+    lookback_hours: 24
+
+  # Example RSS source (disabled — verify robots.txt and ToS before enabling)
+  # - name: "Example Finance"
+  #   type: "rss"
+  #   url: "https://example.com/finance/rss"
+  #   enabled: false
+  #   rate_limit_seconds: 10
+  #   robots_txt_checked: false

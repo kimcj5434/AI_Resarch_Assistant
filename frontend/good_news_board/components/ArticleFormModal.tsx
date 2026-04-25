@@ -24,8 +24,9 @@ const EMPTY_FORM: ArticleFormData = {
   headline: "",
   source: "",
   url: "",
-  published_date: "",
+  published_at: "",
   reason: "",
+  is_shown: true,
 };
 
 export default function ArticleFormModal({
@@ -44,8 +45,9 @@ export default function ArticleFormModal({
         headline: article.headline,
         source: article.source,
         url: article.url,
-        published_date: article.published_date.slice(0, 10),
-        reason: article.reason,
+        published_at: article.published_at.slice(0, 10),
+        reason: article.reason ?? "",
+        is_shown: article.is_shown,
       });
     } else {
       setForm(EMPTY_FORM);
@@ -73,11 +75,13 @@ export default function ArticleFormModal({
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const isEditMode = !!article;
+
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-[520px]">
         <DialogHeader>
-          <DialogTitle>{article ? "기사 수정" : "기사 추가"}</DialogTitle>
+          <DialogTitle>{isEditMode ? "기사 수정" : "기사 추가"}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">
@@ -106,12 +110,12 @@ export default function ArticleFormModal({
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="published_date">발행일</Label>
+              <Label htmlFor="published_at">발행일</Label>
               <Input
-                id="published_date"
-                name="published_date"
+                id="published_at"
+                name="published_at"
                 type="date"
-                value={form.published_date}
+                value={form.published_at}
                 onChange={handleChange}
                 required
               />
@@ -140,9 +144,27 @@ export default function ArticleFormModal({
               onChange={handleChange}
               placeholder="이 기사가 긍정적인 이유를 설명해 주세요..."
               rows={3}
-              required
+              required={!isEditMode}
             />
           </div>
+
+          {isEditMode && (
+            <div className="flex items-center gap-3">
+              <input
+                id="is_shown"
+                name="is_shown"
+                type="checkbox"
+                checked={form.is_shown ?? true}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, is_shown: e.target.checked }))
+                }
+                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <Label htmlFor="is_shown" className="cursor-pointer select-none">
+                보드에 표시
+              </Label>
+            </div>
+          )}
 
           {error && <p className="text-sm text-red-500">{error}</p>}
 
@@ -151,7 +173,7 @@ export default function ArticleFormModal({
               취소
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? "저장 중..." : article ? "변경사항 저장" : "기사 추가"}
+              {loading ? "저장 중..." : isEditMode ? "변경사항 저장" : "기사 추가"}
             </Button>
           </div>
         </form>
