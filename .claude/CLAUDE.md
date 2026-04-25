@@ -1,5 +1,6 @@
 ## General
 - When presenting plans (plan mode), display the plan content in Korean.
+- Always respond to the user in Korean in all conversations.
 
 ## Docs
 - Write documentation in English.

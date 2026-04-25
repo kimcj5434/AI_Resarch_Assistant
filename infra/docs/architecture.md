@@ -15,19 +15,20 @@
 
 ### Good News Board
 
-Table: `news_score`
+Table: `articles`
 
 | Column | Type | Description |
 |---|---|---|
 | id | BIGINT (PK, auto) | Primary key |
 | headline | TEXT | Article headline |
 | source | VARCHAR | News source |
-| publication_date | TIMESTAMP | Publication date and time (YYYY-MM-DD HH:MM:SS) |
-| url | TEXT | Article URL |
-| score | INTEGER | Investment importance score |
-| score_reason | TEXT | Reason for the score |
-| created_at | TIMESTAMP | Collected at |
-| show_frontend | BOOLEAN | Whether to display on frontend (default: true) |
+| url | TEXT UNIQUE | Article URL — deduplication key |
+| published_at | TIMESTAMP | Article publication time (UTC) |
+| collected_at | TIMESTAMP | When the crawler collected it |
+| score | INTEGER | LLM score: -1 (irrelevant), 0 (neutral), 1 (investment-positive) |
+| reason | TEXT NULL | Korean investment reason — populated only when score=1 |
+| is_shown | BOOLEAN | True = show in frontend. Default: score==1 for auto, True for manual |
+| is_manual | BOOLEAN | True if user-added via form (bypasses LLM scoring, score fixed at 1) |
 
 ### Global Event Tracker
 

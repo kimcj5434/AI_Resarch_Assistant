@@ -16,3 +16,4 @@
 
 # Mock DB (local persistence file)
 **/mock_db.json
+.gstack/
