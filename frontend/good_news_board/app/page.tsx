@@ -3,6 +3,9 @@ import ArticleList from "@/components/ArticleList";
 import { fetchArticles } from "@/lib/api";
 import type { Article } from "@/types";
 
+const PAGE_TITLE = "긍정 뉴스 보드";
+const PAGE_SUBTITLE = "투자 리서치를 위한 엄선된 긍정 뉴스 기사";
+
 export default async function HomePage() {
   let articles: Article[] = [];
 
@@ -19,11 +22,9 @@ export default async function HomePage() {
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-1">
             <Newspaper className="h-6 w-6 text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-900">긍정 뉴스 보드</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{PAGE_TITLE}</h1>
           </div>
-          <p className="text-sm text-gray-500">
-            투자 리서치를 위한 엄선된 긍정 뉴스 기사
-          </p>
+          <p className="text-sm text-gray-500">{PAGE_SUBTITLE}</p>
         </div>
 
         <ArticleList initialArticles={articles} />

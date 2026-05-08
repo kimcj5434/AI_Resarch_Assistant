@@ -17,3 +17,5 @@
 # Mock DB (local persistence file)
 **/mock_db.json
 .gstack/
+
+__pycache__
